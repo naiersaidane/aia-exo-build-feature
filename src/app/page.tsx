@@ -2,6 +2,10 @@
 import { useActionState } from 'react';
 import { parseReviews, type ParseResult } from './actions';
 import { AverageRating } from '@/components/average-rating';
+import { RecentTrendKpi } from '@/components/recent-trend-kpi';
+import { StarDistributionChart } from '@/components/star-distribution-chart';
+import { RatingTrendChart } from '@/components/rating-trend-chart';
+import { MonthlyVolumeChart } from '@/components/monthly-volume-chart';
 
 export default function Home() {
   const [state, action, pending] = useActionState<ParseResult | null, FormData>(
@@ -10,7 +14,7 @@ export default function Home() {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-12 px-6 py-16 sm:py-24">
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-12 px-6 py-16 sm:py-24">
       <header className="flex flex-col gap-4">
         <h1 className="text-heading-lg font-medium leading-heading-lg tracking-[-0.02em] text-ink-black">
           Analyse ton export Google&nbsp;Reviews
@@ -45,10 +49,18 @@ export default function Home() {
       </form>
 
       {state?.ok && (
-        <AverageRating
-          averageRating={state.averageRating}
-          totalReviews={state.totalReviews}
-        />
+        <div className="flex flex-col gap-8">
+          <div className="grid grid-cols-1 items-stretch gap-8 sm:grid-cols-2">
+            <AverageRating
+              averageRating={state.averageRating}
+              totalReviews={state.totalReviews}
+            />
+            <RecentTrendKpi recentTrend={state.recentTrend} />
+          </div>
+          <StarDistributionChart distribution={state.distribution} />
+          <RatingTrendChart monthly={state.monthly} />
+          <MonthlyVolumeChart monthly={state.monthly} />
+        </div>
       )}
     </main>
   );

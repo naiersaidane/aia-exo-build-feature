@@ -1,9 +1,24 @@
 'use server';
 import { extractReviewsFromZip } from '@/lib/parse-takeout';
-import { computeAverageRating } from '@/lib/reviews';
+import {
+  computeAverageRating,
+  computeMonthlySeries,
+  computeRecentTrend,
+  computeStarDistribution,
+  type MonthlyPoint,
+  type RecentTrend,
+  type StarDistribution,
+} from '@/lib/reviews';
 
 export type ParseResult =
-  | { ok: true; averageRating: number; totalReviews: number }
+  | {
+      ok: true;
+      averageRating: number;
+      totalReviews: number;
+      distribution: StarDistribution;
+      monthly: MonthlyPoint[];
+      recentTrend: RecentTrend;
+    }
   | { ok: false; error: string };
 
 export async function parseReviews(
@@ -27,6 +42,9 @@ export async function parseReviews(
       ok: true,
       averageRating: computeAverageRating(reviews),
       totalReviews: reviews.length,
+      distribution: computeStarDistribution(reviews),
+      monthly: computeMonthlySeries(reviews),
+      recentTrend: computeRecentTrend(reviews),
     };
   } catch {
     return {
